@@ -24,14 +24,10 @@ public class PlaylistResource {
         return playlistService.crearPlaylist(playlistDTO);
     }
 
-    @GetMapping("/{id}")
-    public PlaylistDTO obtenerPlaylistPorId(@PathVariable Long id) {
-        return playlistService.obtenerPlaylistPorId(id);
-    }
 
     @PutMapping("/{id}")
-    public PlaylistDTO cambiarNombrePlaylist(@PathVariable Long id, @RequestBody PlaylistDTO playlistDTO) {
-        return playlistService.cambiarNombrePlaylist(id, playlistDTO);
+    public void cambiarNombrePlaylist(@PathVariable Long id, @RequestBody String newName) {
+        playlistService.cambiarNombrePlaylist(id,newName);
     }
 
     @DeleteMapping("/{id}")
@@ -52,5 +48,10 @@ public class PlaylistResource {
     @GetMapping("/{id}/songs")
     public List<SongDTO> obtenerCancionesDePlaylist(@PathVariable Long id) {
         return playlistService.obtenerCancionesDePlaylist(id);
+    }
+
+    @GetMapping("/{id}")
+    public PlaylistDTO obtenerPlaylistPorId(@PathVariable Long id) {
+        return playlistService.obtenerPlaylistPorId(id);
     }
 }

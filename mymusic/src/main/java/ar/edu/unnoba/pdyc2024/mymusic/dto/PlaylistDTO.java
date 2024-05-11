@@ -1,15 +1,12 @@
 package ar.edu.unnoba.pdyc2024.mymusic.dto;
 
 import ar.edu.unnoba.pdyc2024.mymusic.model.Playlist;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public class PlaylistDTO {
-    @JsonProperty("nombre")
     private String nombre;
 
-    @JsonProperty("songs")
     private List<SongDTO> songs;
     private Long id;
 

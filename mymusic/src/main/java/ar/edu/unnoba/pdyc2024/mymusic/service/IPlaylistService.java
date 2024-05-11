@@ -11,13 +11,14 @@ public interface IPlaylistService {
 
     PlaylistDTO crearPlaylist(PlaylistDTO playlistDTO);
 
-    PlaylistDTO obtenerPlaylistPorId(Long id);
-
-    PlaylistDTO cambiarNombrePlaylist(Long id, PlaylistDTO playlistDTO);
-
     void borrarPlaylist(Long id);
 
     void agregarCancionAPlaylist(Long id,Long songId);
+
+    void cambiarNombrePlaylist(Long playlistId, String newName);
+
     void sacarCancionDePlaylist(Long id, Long songId);
     List<SongDTO> obtenerCancionesDePlaylist(Long id);
+
+    PlaylistDTO obtenerPlaylistPorId(Long id);
 }

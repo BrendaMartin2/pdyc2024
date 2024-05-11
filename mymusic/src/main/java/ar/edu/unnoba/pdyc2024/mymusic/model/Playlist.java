@@ -1,6 +1,5 @@
 package ar.edu.unnoba.pdyc2024.mymusic.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -11,7 +10,6 @@ public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonProperty("NombrePlaylist")
     @Column(name = "nombre", nullable = false)
     private String nombre;
     @ManyToMany()

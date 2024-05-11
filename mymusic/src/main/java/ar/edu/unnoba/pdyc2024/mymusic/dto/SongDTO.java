@@ -2,14 +2,10 @@ package ar.edu.unnoba.pdyc2024.mymusic.dto;
 
 import ar.edu.unnoba.pdyc2024.mymusic.model.Genre;
 import ar.edu.unnoba.pdyc2024.mymusic.model.Song;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SongDTO {
-    @JsonProperty("nombre")
     private String nombre;
-    @JsonProperty("autor")
     private String autor;
-    @JsonProperty("genero")
     private Genre genero;
     private Long id;
 

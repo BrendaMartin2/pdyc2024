@@ -1,6 +1,5 @@
 package ar.edu.unnoba.pdyc2024.mymusic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +12,6 @@ public class PlaylistSong {
 
     @ManyToOne
     @JoinColumn(name = "playlist_id")
-    @JsonIgnore
     private Playlist playlist;
 
     @ManyToOne

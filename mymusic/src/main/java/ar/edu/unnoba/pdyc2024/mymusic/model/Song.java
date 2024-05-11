@@ -1,6 +1,5 @@
 package ar.edu.unnoba.pdyc2024.mymusic.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,13 +8,12 @@ public class Song {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonProperty("nombreCancion")
+
     @Column(name = "name", nullable = false)
     private String nombre;
-    @JsonProperty("nombreAutor")
+
     @Column(name = "author", nullable = false)
     private String autor;
-    @JsonProperty("Genero")
     @Enumerated(EnumType.STRING)
     @Column(name = "genre", nullable = false)
     private Genre genero;

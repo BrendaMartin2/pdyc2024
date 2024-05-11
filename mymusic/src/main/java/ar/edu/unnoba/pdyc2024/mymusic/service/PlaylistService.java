@@ -6,8 +6,10 @@ import ar.edu.unnoba.pdyc2024.mymusic.model.Playlist;
 import ar.edu.unnoba.pdyc2024.mymusic.model.Song;
 import ar.edu.unnoba.pdyc2024.mymusic.repository.PlaylistRepository;
 import ar.edu.unnoba.pdyc2024.mymusic.repository.SongRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,76 +19,75 @@ public class PlaylistService implements IPlaylistService {
     @Autowired
     private PlaylistRepository playlistRepository;
 
-    @Autowired
-    private SongService songService;
     private SongRepository songRepository;
 
+    @Autowired
+    private SongService songService;
+
+    private ModelMapper modelMapper;
+
     @Override
-    public List<PlaylistDTO> obtenerPlaylists() {
-        List<Playlist> playlists = playlistRepository.findAll();
-        List<PlaylistDTO> playlistDTOs = new ArrayList<>();
-        for (Playlist playlist : playlists) {
-            playlistDTOs.add(new PlaylistDTO(playlist));
+    public List<PlaylistDTO> obtenerPlaylists(){
+            List<Playlist> playlists = playlistRepository.findAll();
+            List<PlaylistDTO> playlistDTOs = new ArrayList<>();
+            for (Playlist playlist : playlists) {
+                PlaylistDTO playlistDTO = modelMapper.map(playlist, PlaylistDTO.class);
+                playlistDTOs.add(playlistDTO);
+            }
+            return playlistDTOs;
         }
-        return playlistDTOs;
-    }
 
     @Override
     public PlaylistDTO crearPlaylist(PlaylistDTO playlistDTO) {
-        Playlist playlist = new Playlist();
-        playlist.setNombre(playlistDTO.getNombre());
-        playlist = playlistRepository.save(playlist);
-        return new PlaylistDTO(playlist);
-    }
-
-    @Override
-    public PlaylistDTO obtenerPlaylistPorId(Long id) {
-        Playlist playlist = playlistRepository.findById(id).orElse(null);
-        if (playlist != null) {
-            return new PlaylistDTO(playlist);
-        } else {
-            throw new RuntimeException("Playlist no encontrada, id: " + id);
-        }
+        Playlist playlist = modelMapper.map(playlistDTO, Playlist.class);
+        Playlist guardarPlaylist = playlistRepository.save(playlist); // se guarda la playlist en la base de datos
+        return modelMapper.map(guardarPlaylist, PlaylistDTO.class); // se mapea la playlist de vuelta a un DTO y la retornamos
     }
 
     @Override
     public void agregarCancionAPlaylist(Long playlistId, Long songId) {
-        Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
-        if (playlist == null){
-            throw new RuntimeException("Playlist no encontrada, id: " + playlistId);}
-        Song song = songService.getSongById(songId);
-        if (song == null) {
-            throw new RuntimeException("Canción no encontrada, id: " + songId);
+            Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
+            if (playlist != null) {
+                // se busca la canción por su ID
+                Song song = songRepository.findById(songId).orElse(null);
+                if (song != null) {
+                    // se agrega la canción a la playlist
+                    playlist.getSongs().add(song);
+                    // Guardamos la playlist actualizada en la base de datos
+                    Playlist savedPlaylist = playlistRepository.save(playlist);
+                } else {
+                    throw new IllegalArgumentException("No se encontró la canción con el ID especificado.");
+                }
+            } else {
+                throw new IllegalArgumentException("No se encontró la playlist con el ID especificado.");
+            }
         }
-        // Agregar la canción a la lista de canciones de la playlist
-        playlist.getSongs().add(song);
-        playlistRepository.save(playlist);
-    }
 
     @Override
-    public PlaylistDTO cambiarNombrePlaylist(Long id, PlaylistDTO playlistDTO) {
-        Playlist playlist = playlistRepository.findById(id).orElse(null);
+    public void cambiarNombrePlaylist(Long playlistId, String newName) {
+        Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
         if (playlist != null) {
-            playlist.setNombre(playlistDTO.getNombre());
-            playlist = playlistRepository.save(playlist);
-            return new PlaylistDTO(playlist);
+            playlist.setNombre(newName);
+            playlistRepository.save(playlist);
         } else {
-            throw new RuntimeException("Playlist no encontrada, id: " + id);
+            throw new IllegalArgumentException("No se encontró la playlist con el ID especificado.");
         }
     }
 
     public void sacarCancionDePlaylist(Long playlistId, Long songId) {
         Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
-        if (playlist == null) {
-            throw new RuntimeException("Playlist no encontrada, id: " + playlistId);
+        if (playlist != null) {
+            Song song = songRepository.findById(songId).orElse(null);
+            if (song != null) {
+                playlist.getSongs().remove(song);
+                // se guarda la playlist actualizada en la base de datos
+                playlistRepository.save(playlist);
+            } else {
+                throw new IllegalArgumentException("No se encontró la canción con el ID especificado.");
+            }
+        } else {
+            throw new IllegalArgumentException("No se encontró la playlist con el ID especificado.");
         }
-        Song song = songService.getSongById(songId);
-        if (song == null) {
-            throw new RuntimeException("Canción no encontrada, id: " + songId);
-        }
-        // Eliminar la canción de la lista de canciones de la playlist
-        playlist.getSongs().remove(song);
-        playlistRepository.save(playlist);
     }
 
     @Override
@@ -101,18 +102,26 @@ public class PlaylistService implements IPlaylistService {
 
     public List<SongDTO> obtenerCancionesDePlaylist(Long playlistId) {
         Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
+        List<SongDTO> songsDTO = new ArrayList<>();
         if (playlist != null) {
             List<Song> songs = playlist.getSongs();
-            List<SongDTO> songDTOs = new ArrayList<>();
             for (Song song : songs) {
-                SongDTO songDTO = new SongDTO();
-                songDTO.setId(song.getId());
-                songDTO.setNombre(song.getNombre());
-                songDTOs.add(songDTO);
+                SongDTO songDTO = modelMapper.map(song, SongDTO.class);
+                songsDTO.add(songDTO);
             }
-            return songDTOs;
         } else {
             throw new RuntimeException("Playlist no encontrada, id: " + playlistId);
+        }
+        return songsDTO;
+    }
+
+    @Override
+    public PlaylistDTO obtenerPlaylistPorId( @PathVariable Long id) {
+        Playlist playlist = playlistRepository.findById(id).orElse(null);
+        if (playlist != null) {
+            return new PlaylistDTO(playlist);
+        } else {
+            throw new RuntimeException("Playlist no encontrada, id: " + id);
         }
     }
 }
