@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
-        packages("ar.edu.unnoba.pdyc2024.mymusic.resource");
+        packages("ar.edu.unnoba.pdyc2024.mymusic");
     }
 }

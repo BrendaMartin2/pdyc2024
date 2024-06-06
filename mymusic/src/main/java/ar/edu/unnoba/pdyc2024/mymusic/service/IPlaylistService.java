@@ -1,24 +1,24 @@
 package ar.edu.unnoba.pdyc2024.mymusic.service;
 
-import ar.edu.unnoba.pdyc2024.mymusic.dto.PlaylistDTO;
-import ar.edu.unnoba.pdyc2024.mymusic.dto.SongDTO;
+import ar.edu.unnoba.pdyc2024.mymusic.model.Playlist;
+import ar.edu.unnoba.pdyc2024.mymusic.model.Song;
 
 import java.util.List;
 
 public interface IPlaylistService {
 
-    List<PlaylistDTO> obtenerPlaylists();
+    List<Playlist> obtenerPlaylists();
 
-    PlaylistDTO crearPlaylist(PlaylistDTO playlistDTO);
+    void crearPlaylist(Playlist playlist);
 
     void borrarPlaylist(Long id);
 
-    void agregarCancionAPlaylist(Long id,Long songId);
+    void agregarCancionAPlaylist(Playlist playlist);
 
-    void cambiarNombrePlaylist(Long playlistId, String newName);
+    void cambiarNombrePlaylist(Playlist playlist);
 
-    void sacarCancionDePlaylist(Long id, Long songId);
-    List<SongDTO> obtenerCancionesDePlaylist(Long id);
+    void sacarCancionDePlaylist(Playlist playlist);
+    List<Song> obtenerCancionesDePlaylist(Long id);
 
-    PlaylistDTO obtenerPlaylistPorId(Long id);
+    Playlist obtenerPlaylistPorId(Long id);
 }
